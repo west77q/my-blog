@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Edit Blog Post{% endblock %}
+
+{% block content %}
+
+    
+
+
+
+{% if user.is_authenticated %}
+    {% if user.id == post.author.id %}
+        <h1>Update Post</h1>
+        <br/><br/>
+        <div class="form-group">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-warning">Upadte</button>
+        </div>
+    {% else %}
+    You Can Not Use This Function Because You are Not The Author!
+
+    {% endif %}
+
+ 
+
+{% else %}
+You Need To Be A Registered Member Before You Can Use This Space!
+
+{% endif %}
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% if user.is_authenticated %} 
+              <ul class="navbar-nav ml-auto">
+                <!-- Notification Bell Icon (placed to the right) -->
+                <li class="nav-item" position-relative>
+                  <a  href="{% url 'notifications' %}" class="nav-link ">
+                    <i class="fas fa-bell fa-2x"></i>
+                      {% if notifications_count > 0 %}
+                      <span class="badge badge-danger position-absolute top-0 start-100 translate-middle">
+                          {{ notifications_count }}
+                      </span>
+                      {% endif %}
+                  </a>
+                </li>
+              </ul>
+          {% endif %}
+    

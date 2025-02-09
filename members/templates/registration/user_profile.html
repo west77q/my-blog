@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- Profile Banner -->
+<div class="profile-banner" style="background-image: url('{% static 'myblog/images/cover-photo.jpg' %}'); height: 250px; background-size: cover; background-position: center;">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-4 text-center">
+        <!-- Profile Picture -->
+        {% if page_user.profile_pic %}
+          <img src="{{ page_user.profile_pic.url }}" alt="Author Profile Pic" class="rounded-circle img-fluid" style="width: 150px; height: 150px;" data-bs-toggle="modal" data-bs-target="#profilePicModal">
+        {% else %}
+          <img src="{% static 'myblog/images/default.jpg' %}" alt="default pic" class="rounded-circle img-fluid" style="width: 150px; height: 150px;" data-bs-toggle="modal" data-bs-target="#profilePicModal">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Info Section -->
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center">{{ page_user.user.username }}'s Profile</h2>
+          <p class="text-center text-muted">Joined on: {{ page_user.user.date_joined|date:"F j, Y" }}</p>
+
+          <!-- Social Media Links -->
+          <div class="d-flex justify-content-center mb-4">
+            {% if page_user.website_url %}
+              <a href="{{ page_user.website_url }}" target="_blank" class="btn btn-outline-primary btn-sm mx-2">
+                <i class="bi bi-globe"></i> Website
+              </a>
+            {% endif %}
+
+            {% if page_user.facebook_url %}
+              <a href="{{ page_user.facebook_url }}" target="_blank" class="btn btn-outline-primary btn-sm mx-2">
+                <i class="bi bi-facebook"></i> Facebook
+              </a>
+            {% endif %}
+
+            {% if page_user.twitter_url %}
+              <a href="{{ page_user.twitter_url }}" target="_blank" class="btn btn-outline-primary btn-sm mx-2">
+                <i class="bi bi-twitter"></i> Twitter
+              </a>
+            {% endif %}
+
+            {% if page_user.instagram_url %}
+              <a href="{{ page_user.instagram_url }}" target="_blank" class="btn btn-outline-primary btn-sm mx-2">
+                <i class="bi bi-instagram"></i> Instagram
+              </a>
+            {% endif %}
+
+            {% if page_user.snap_url %}
+              <a href="{{ page_user.snap_url }}" target="_blank" class="btn btn-outline-primary btn-sm mx-2">
+                <i class="bi bi-snapchat"></i> Snapchat
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Bio Section -->
+          <div class="mb-4">
+            <h4 class="text-center">Bio</h4>
+            <p class="card-text">{{ page_user.bio }}</p>
+          </div>
+
+          <!-- Back Button -->
+          <div class="text-center">
+            <a href="{% url 'home' %}" class="btn btn-warning">Back to Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Profile Picture -->
+<div class="modal fade" id="profilePicModal" tabindex="-1" aria-labelledby="profilePicModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="profilePicModalLabel">Profile Picture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        {% if page_user.profile_pic %}
+          <img src="{{ page_user.profile_pic.url }}" alt="Author Profile Pic" class="img-fluid">
+        {% else %}
+          <img src="{% static 'myblog/images/default.jpg' %}" alt="default pic" class="img-fluid">
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

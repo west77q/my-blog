@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile Page{% endblock %}
+
+{% block content %}
+
+    
+
+
+
+
+{% if user.is_authenticated %}
+    {% if user.id == profile.user.id %}
+        <h1>Edit Profile Page..</h1>
+        <br/><br/>
+        <div class="form-group">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn btn-warning">Save</button>
+            </form>
+        </div>
+     
+
+{% else %}
+  You Are Not The Correct User To Edit This Page!
+  
+{% endif %}
+
+    {% else %}
+    You Need To Be A Registered Member Before You Can Use This Space!
+
+    {% endif %}
+
+    
+
+{% endblock %}

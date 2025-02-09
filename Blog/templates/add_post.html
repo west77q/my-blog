@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+{% block title %}Creat A New Blog Post{% endblock %}
+
+{% block content %}
+
+    
+
+
+
+
+{% if user.is_authenticated %}
+     <h1>Add Post</h1>
+     <br/><br/>
+     <div class="form-group">
+          <form method="POST" enctype="multipart/form-data">
+               {% csrf_token %}
+               {{ form.as_p }}
+               <button class="btn btn-warning">Post</button>
+     </div>
+     
+
+{% else %}
+You Need To Be A Registered Member Before You Can Use This Space!
+
+{% endif %}
+
+
+
+
+
+
+{% endblock %}

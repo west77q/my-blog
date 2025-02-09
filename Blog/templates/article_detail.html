@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title_tag }}{% endblock %}
+
+{% block content %}
+<!-- Container to center content -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <!-- Adjust the column size to make the post wider but centered -->
+        <div class="col-12 col-md-10 col-lg-8">
+            <h1>{{ post.title }}</h1>
+            <small>by: {{ post.author }} | {{ post.post_date }} </small>
+            <br>
+            {% if user.is_authenticated %}
+                {% if user.id == post.author.id %}
+                    - <a href="{% url 'update_post' post.pk %}">Edit</a> 
+                    | <a href="{% url 'delete_post' post.pk %}">Delete</a>
+                {% endif %}
+            {% endif %}
+            <br><br>
+            <hr>
+            
+            <!-- Post image -->
+            <img src="{{ post.images.url }}" alt="card image cap" class="img-fluid mb-3" width="1000" height="1000">
+            
+            <!-- Post body -->
+            <p>{{ post.body }}</p>
+            
+            <hr>
+            
+            <!-- Comments Section -->
+            <h3>Comments</h3>
+            {% if not post.comments.all %}
+                <p>No Comments Yet... <a href="{% url 'add_comment' post.pk %}">Add One</a></p>
+            {% else %}
+                <a href="{% url 'add_comment' post.pk %}">Add Comment</a>
+                <br><br>
+
+                <!-- Link to toggle visibility of comments -->
+                <a href="#commentsSection" data-toggle="collapse" aria-expanded="false" aria-controls="commentsSection">
+                    View Comments ({{ post.comments.count }})
+                </a>
+
+                <!-- Collapsible Comments Section -->
+                <div class="collapse" id="commentsSection">
+                    {% for comment in post.comments.all %}
+                        <div class="comment mb-3">
+                            <strong>{{ comment.name }} - {{ comment.date_created }}</strong>
+                            <p>{{ comment.body }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                <br><br>
+            {% endif %}
+            <br>
+
+            <!-- Back Button -->
+            <a href="{% url 'home' %}" class="btn btn-warning">Back</a>
+            
+            <br><br>
+            
+            <!-- Like/Unlike Button -->
+            <p>Likes: {{ post.like_count }}</p>
+            {% if user.is_authenticated %}
+                {% if user_likes %}
+                    <a href="{% url 'toggle_like' post.id %}" class="btn btn-warning">Unlike</a>
+                {% elif user_unlikes %}
+                    <a href="{% url 'toggle_like' post.id %}" class="btn btn-warning">Like</a>
+                {% else %}
+                    <a href="{% url 'toggle_like' post.id %}" class="btn btn-warning">Like</a>
+                {% endif %}
+            {% endif %}
+            
+            <br><br>
+            
+            <!-- Author Profile Section -->
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                    <div class="col-md-2">
+                        {% if post.author.profile.profile_pic %}
+                            <img src="{{ post.author.profile.profile_pic.url }}" alt="Author Profile Pic" class="rounded-circle" width="100" height="200">
+                        {% else %}
+                            <img src="/media/profile_pic/default.jpg" alt="default pic" class="rounded-circle img-fluid">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-10">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ post.author }}</h5>
+                            <p class="small text-muted">
+                                {% if post.author.profile %}
+                                    <a href="{% url 'show_profile_page' post.author.profile.id %}">Profile Page</a>
+                                {% else %}
+                                    <p>No author assigned</p>
+                                {% endif %}
+                                
+                                {% if post.author.profile.website_url %}
+                                    <a href="{{ post.author.profile.website_url }}">Website</a> |
+                                {% endif %}
+                                
+                                {% if post.author.profile.facebook_url %}
+                                    <a href="{{ post.author.profile.facebook_url }}">Facebook</a> |
+                                {% endif %}
+                                
+                                {% if post.author.profile.twitter_url %}
+                                    <a href="{{ post.author.profile.twitter_url }}">Twitter</a> |
+                                {% endif %}
+                                
+                                {% if post.author.profile.instagram_url %}
+                                    <a href="{{ post.author.profile.instagram_url }}">Instagram</a> |
+                                {% endif %}
+                                
+                                {% if post.author.profile.snap_url %}
+                                    <a href="{{ post.author.profile.snap_url }}">Snapchat</a>
+                                {% endif %}
+                            </p>
+                            <p class="card-text">{{ post.author.profile.bio }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End col -->
+    </div> <!-- End row -->
+</div> <!-- End container -->
+
+{% endblock %}

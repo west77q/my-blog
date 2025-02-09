@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<!-- Main container for centering and layout -->
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <!-- Column containing all posts -->
+        <div class="col-12">
+            <!-- Create a flex container to display posts inline -->
+            <div class="d-flex flex-wrap justify-content-between">
+                {% for post in object_list %}
+                    <div class="card mb-4" style="width: 30%; margin-bottom: 20px;">
+                        <!-- Post Image -->
+                        <img src="{{ post.images.url }}" alt="Post image" class="card-img-top" style="height: 250px; object-fit: cover;">
+
+                        <!-- Post Content -->
+                        <div class="card-body">
+                            <!-- Post Title with Link -->
+                            <h5 class="card-title mb-2" style="font-size: 0.85rem;">
+                                {% if user.is_authenticated %}
+                                    <!-- Authenticated user can click to view full post -->
+                                    <a href="{% url 'article-detail' post.pk %}">{{ post.title }}</a>
+                                {% else %}
+                                    <!-- Unauthenticated user is redirected to login page -->
+                                    <a href="{% url 'login' %}">{{ post.title }}</a>
+                                {% endif %}
+                            </h5>
+                            <!-- Post Category -->
+                            <p class="small text-muted mb-1" style="font-size: 0.85rem;">
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'category' post.category|slugify %}"> {{ post.category }} </a>
+                                {% else %}
+                                    <!-- Unauthenticated user is redirected to login page -->
+                                    <a href="{% url 'login' %}">{{ post.category }}</a>
+                                {% endif %}
+                            </p>
+                            <!-- Post Author and Date -->
+                            <p class="mb-2" style="font-size: 0.85rem;">
+                                 {{ post.author }} | {{ post.post_date }}
+                            </p>
+                            
+                            <!-- Edit/Delete Links for Post Author -->
+                            {% if user.is_authenticated %}
+                                {% if user.id == post.author.id %}
+                                    <p class="mb-1" style="font-size: 0.85rem;">
+                                         <a href="{% url 'update_post' post.pk %}">Edit</a> | 
+                                          <a href="{% url 'delete_post' post.pk %}">Delete</a>
+                                    </p>
+                                {% endif %}
+                            {% endif %}
+                            
+                            <!-- Post Preview Body -->
+                            <p class="small text-muted mb-1" style="font-size: 0.87rem;">
+                                {{ post.body|slice:":100" }}...
+                            </p>
+
+                           
+                        </div>
+                    </div> <!-- End card -->
+                {% endfor %}
+            </div> <!-- End flex container -->
+        </div> <!-- End column -->
+    </div> <!-- End row -->
+</div> <!-- End container -->
+
+{% endblock %}

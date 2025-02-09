@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="notification-bell">
+    <!-- Display the notification bell with a dropdown for recent posts -->
+    <a href="#" class="notification-icon" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <h1>Your Notifications</h1>
+
+        {% if unread_notifications %}
+            <h4>You have {{ unread_notifications.count }} unread notifications</h4>
+        {% else %}
+            <p>No unread notifications</p>
+        {% endif %}
+    </a>
+
+    <!-- List of Notifications -->
+    <ul class="list-group">
+        {% for notification in notifications %}
+            <li class="list-group-item {% if not notification.is_read %}bg-light{% endif %}">
+                {% if notification.url %}
+                    <!-- Display clickable link if post/comment exists -->
+                    <a href="{{ notification.url }}">
+                        {{ notification.message }}
+                    </a>
+                {% else %}
+                    <!-- Display message if the post/comment no longer exists -->
+                    <p>{{ notification.message }} <span class="text-muted"></span></p>
+                {% endif %}
+                
+                {% if not notification.is_read %}
+                    <span class="badge badge-primary">Unread</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<br><br>
+<!-- Back Button -->
+<a href="{% url 'home' %}" class="btn btn-warning">Home</a>
+
+<br><br>
+{% endblock %}

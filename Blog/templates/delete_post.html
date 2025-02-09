@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Delete Blog Post{% endblock %}
+
+{% block content %}
+
+    
+
+
+
+{% if user.is_authenticated %}
+   {% if user.id == post.author.id %}
+        <h1>Delete Post</h1>
+        <br/><br/>
+        <h3>Delete: {{ post.title }}</h3>
+
+
+        <br/>
+        <div class="form-group">
+            <form method="POST">
+                {% csrf_token %}
+                <strong> Are you sure?</strong><br/><br/>
+                <button class="btn btn-warning">Delete Post</button>
+        </div>
+   {% else %}
+   You Can Not Use This Function Because You are Not The Author!
+   
+   {% endif %}
+
+
+{% else %}
+You Need To Be A Registered Member Before You Can Use This Space!
+
+{% endif %}
+
+
+
+
+
+
+{% endblock %}

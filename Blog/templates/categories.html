@@ -5,42 +5,39 @@
 {% if category_posts %}
 
     <div class="container my-5">
-        <h1 class="text-center">{{ cats }}</h1> <!-- Category Title Centered -->
+        <h1 class="text-center" style="color: #5D3F6B;">{{ cats }}</h1> <!-- Deep Purple Category Title -->
         <br><br>
 
         <ul class="list-unstyled">
         {% for post in category_posts %}
             <li class="mb-4">
                 <!-- Post Container -->
-                <div class="card mx-auto" style="max-width: 800px;">
+                <div class="card mx-auto shadow-lg" style="max-width: 800px; border-color: #5D3F6B;">
                     <!-- Post Title -->
                     <div class="card-body">
-                        <a href="{% url 'article-detail' post.pk %}">
-                            <h3 class="card-title text-center">{{ post.title }}</h3> <!-- Post Title Centered -->
-                            
+                        <a href="{% url 'article-detail' post.pk %}" class="text-decoration-none">
+                            <h3 class="card-title text-center" style="color: #5D3F6B;">{{ post.title }}</h3> <!-- Deep Purple Title -->
                         </a>
                         <p class="small text-muted text-center">
-                            Author: {{ post.author.username }} - {{ post.author.first_name }} {{ post.author.last_name }} - {{ post.post_date }}
+                            Author: <span class="text-dark">{{ post.author.username }}</span> - {{ post.author.first_name }} {{ post.author.last_name }} - {{ post.post_date }}
                         </p>
                         
                         <!-- Edit/Delete Links (if authenticated and author) -->
                         {% if user.is_authenticated %}
                             {% if user.id == post.author.id %}
                                 <p class="text-center">
-                                    - <a href="{% url 'update_post' post.pk %}">Edit</a> |
-                                      <a href="{% url 'delete_post' post.pk %}">Delete</a>
+                                      <a href="{% url 'update_post' post.pk %}" style="color: #5D3F6B;">Edit</a> |
+                                      <a href="{% url 'delete_post' post.pk %}" class="text-danger fw-bold">Delete</a>
                                 </p>
                             {% endif %}
                         {% endif %}
                         
                         <!-- Post Body (first 50 characters) -->
-                        <p>{{ post.body|slice:":50" }}...</p>
+                        <p>{{ post.body|slice:":150" }}...</p>
                     </div>
 
                     <!-- Post Image -->
                     <img src="{{ post.images.url }}" alt="Post image" class="card-img-bottom img-fluid mb-3">
-                    
-
                 </div> <!-- End of Post Card -->
                 <br><br>
             </li>
@@ -49,7 +46,7 @@
     </div> <!-- End container -->
 
 {% else %}
-    <h2 class="text-center">Sorry, this page does not exist!</h2>
+    <h2 class="text-center text-danger">Sorry, this page does not exist!</h2>
 {% endif %}   
 
 {% endblock %}

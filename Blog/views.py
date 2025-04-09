@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.core.mail import send_mail
 from django.conf import settings
-from django.views.generic import ListView, DetailView, CreateView, UpdateView,DeleteView
-from .models import Post,  Comment, Category, Profile, Like, Notification
+from .models import Post,  Comment, Category, Profile, Notification
 from .forms import PostForm, EditForm, CommentForm, UserProfileForm, CategorForm
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
@@ -60,53 +59,43 @@ def mark_as_read(request, notification_id):
 
 
 
+def like_post(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        post_id = request.POST.get("post_id")
+        post = get_object_or_404(Post, id=post_id)
 
-#Ensures that only authenticated users can access this view. If the user is not logged in, they are redirected to the login page.
-@login_required
-def toggle_like(request, post_id):
-    post = get_object_or_404(Post, id=post_id)  # Retrieve the post object with the given post_id.
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)  # Unlike
+            liked = False
+        else:
+            post.likes.add(request.user)  # Like
+            liked = True
 
-    # Check if the user has already liked the post
-    like, created = Like.objects.get_or_create(user=request.user, post=post)
+            # Handle notifications
+            if request.user != post.author:  # Ensure user isn't liking their own post
+                post_author = post.author  # Get the post author
+                message = f"Your post '{post.title}' has been liked by {request.user.username}."
+                post_url = reverse('article-detail', args=[post.id])
 
-    if not created:
-        # If the user already has a like, toggle it
-        like.like = not like.like
-        like.save()
-    else:
-        # If the user has not liked yet, set it to True
-        like.like = True
-        like.save()
+                # Create a notification for the post author
+                Notification.objects.create(user=post_author, message=message, url=post_url)
 
-    # Handle notifications directly in the view
-    if created and like.like and request.user != post.author:  # Check if it's a new like and not the post author liking their own post
-        post_author = post.author  # Get the author of the post
-        message = f"Your post '{post.title}' has been liked by {request.user.username}."
-        post_url = reverse('article-detail', args=[post.id])
+                print(f"A new like was added to post: {post.title} by {request.user.username}")
 
-        # Create a notification for the post author
-        Notification.objects.create(user=post_author, message=message,  url=post_url)
-
-        print(f"A new like was added to post: {post.title} by {request.user.username}")
-
-    return redirect('article-detail', pk=post.id)
+        return JsonResponse({"liked": liked, "like_count": post.likes.count()})
+    
+    return JsonResponse({"error": "Invalid request"}, status=400)
+    
 
 
 
-
-
-
-class Home(ListView):
-    model = Post 
-    template_name = 'home.html'
-    ordering = ['-post_date']
-
-
-def  get_context_data(self, *args, **kwargs):
+def home(request):
+    posts = Post.objects.all().order_by('-post_date')
     cat_menu = Category.objects.all()
-    context = super(Home, self).get_context_data(*args, **kwargs)
-    context["cat_menu"] = cat_menu
-    return context
+    return render(request, 'home.html', {
+        'object_list': posts,
+        'cat_menu': cat_menu,
+    })
 
 
 #This view displays posts belonging to a specific category.
@@ -116,70 +105,108 @@ def CategoryPost(request, cats):
     
 
 
-class ArticleDetailView(DetailView):
-    model = Post
-    template_name = 'article_detail.html'
-
-    def  get_context_data(self, *args, **kwargs):
-        cat_menu = Category.objects.all()
-        context = super(ArticleDetailView, self).get_context_data(*args, **kwargs)
-        context["cat_menu"] = cat_menu
-        return context
+def article_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    cat_menu = Category.objects.all()
+    return render(request, 'article_detail.html', {
+        'post': post,
+        'cat_menu': cat_menu,
+    })
 
 
+@login_required
+def add_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+
+            # Send email notification to all authenticated users
+            send_new_post_notification(post)
+
+            return redirect('home')
+    else:
+        form = PostForm()
+
+    return render(request, 'add_post.html', {'form': form})
 
 
-class AddPost(CreateView):
-    model= Post
-    form_class = PostForm
-    queryset= Post.objects.all()
-    template_name = 'add_post.html'
-    success_url = reverse_lazy('home')
+def send_new_post_notification(post):
+    subject = f"New Post: {post.title}"
+    message = f"A new post titled '{post.title}' has been published on the blog. Check it out at {settings.SITE_URL}."
+    from_email = settings.EMAIL_HOST_USER
+
+    # Get the email addresses of all authenticated users (active users)
+    authenticated_users = User.objects.filter(is_active=True)
+    recipient_list = [user.email for user in authenticated_users]
+
+    # Send the email to all authenticated users
+    send_mail(subject, message, from_email, recipient_list)
+
+
+@login_required
+def add_category(request):
+    if request.method == 'POST':
+        form = CategorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')  # Or a specific category page
+    else:
+        form = CategorForm()
+    return render(request, 'add_category.html', {'form': form})
+
+
+@login_required
+def update_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.user != post.author:
+        return redirect('home')  # Prevent non-authors from editing the post
+
+    if request.method == 'POST':
+        form = EditForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect('article-detail', pk=post.pk)
+    else:
+        form = EditForm(instance=post)
+
+    return render(request, 'update_post.html', {'form': form, 'post': post})
+
+
+
+
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.user != post.author:
+        return redirect('article-detail', pk=post.pk)
+
+    if request.method == 'POST':  # If the user confirms deletion
+        post.delete()
+        return redirect('home')
+
+    return render(request, 'delete_post.html', {'post': post})  # Show confirmation page
+
+
+
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return redirect('article-detail', pk=post.pk)
+    else:
+        form = CommentForm()
     
-
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
-
-class AddCategory(CreateView):
-    model= Category
-    form_class = CategorForm
-    #queryset= Post.objects.all()
-    template_name = 'add_category.html'
-    #fields = '__all__'
-
-
-
-class updatepost(UpdateView):
-    model= Post
-    form_class = EditForm
-    queryset= Post.objects.all()
-    template_name = 'update_post.html'
-    #fields = '__all__'
-
-
-class DeletePost(DeleteView):
-     model= Post
-     queryset= Post.objects.all()
-     template_name = 'delete_post.html'
-     success_url = reverse_lazy('home')
-
-
-
-class AddComment(CreateView):
-    model= Comment
-    form_class = CommentForm
-    queryset= Post.objects.all()
-    template_name = 'add_comment.html'
-    
-    def form_valid(self, form):
-        form.instance.post_id = self.kwargs['pk']
-        return super().form_valid(form)
-    
-    success_url = reverse_lazy('home')
-
+    return render(request, 'add_comment.html', {'form': form, 'post': post})
 
 
 @login_required
@@ -198,5 +225,17 @@ def update_profile(request):
         form = UserProfileForm(instance=user_profile)
 
     return render(request, 'profile_pic.html', {'form': form})    
+
+
+def terms_of_service(request):
+    return render(request, 'terms_of_service.html')
+
+
+def cookie_policy(request):
+    return render(request, 'cookie_policy.html')
+
+
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')
 
 

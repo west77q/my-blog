@@ -2,67 +2,41 @@
 {% block title %}Edit Blog Post{% endblock %}
 
 {% block content %}
-
-    
-
-
-
-{% if user.is_authenticated %}
-    {% if user.id == post.author.id %}
-        <h1>Update Post</h1>
-        <br/><br/>
-        <div class="form-group">
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn btn-warning">Upadte</button>
-        </div>
+<div class="container mt-5">
+    {% if user.is_authenticated %}
+        {% if user == post.author %}
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-lg">
+                        <div class="card-header text-white text-center" style="background-color: #5D3F6B;">
+                            <h2>Edit Your Blog Post</h2>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    {{ form.as_p }}
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-lg text-white" style="background-color: #5D3F6B; border-color: #5D3F6B;">
+                                        Update Post
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-danger text-center" role="alert">
+                <h4>You Cannot Edit This Post Because You Are Not The Author!</h4>
+            </div>
+        {% endif %}
     {% else %}
-    You Can Not Use This Function Because You are Not The Author!
-
+        <div class="alert alert-warning text-center" role="alert">
+            <h4>You Need To Be A Registered Member Before You Can Edit Posts!</h4>
+            <a href="{% url 'register' %}" class="btn btn-primary mt-3">Register Here</a>
+        </div>
     {% endif %}
-
- 
-
-{% else %}
-You Need To Be A Registered Member Before You Can Use This Space!
-
-{% endif %}
-
-
-
-
-
-
-
+</div>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% if user.is_authenticated %} 
-              <ul class="navbar-nav ml-auto">
-                <!-- Notification Bell Icon (placed to the right) -->
-                <li class="nav-item" position-relative>
-                  <a  href="{% url 'notifications' %}" class="nav-link ">
-                    <i class="fas fa-bell fa-2x"></i>
-                      {% if notifications_count > 0 %}
-                      <span class="badge badge-danger position-absolute top-0 start-100 translate-middle">
-                          {{ notifications_count }}
-                      </span>
-                      {% endif %}
-                  </a>
-                </li>
-              </ul>
-          {% endif %}
-    

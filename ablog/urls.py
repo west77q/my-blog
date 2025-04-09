@@ -7,8 +7,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Blog.urls')), 
-    path('members/', include('django.contrib.auth.urls')),
     path('members/', include('members.urls')),
+    path('members/', include('django.contrib.auth.urls')),
+    
 
 # Serve media files during development
   

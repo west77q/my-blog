@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import UserRegistration, UserEditView, PasswordsChangeView, ShowProfilePage, EditProfilePage, CreateProfilePage
+from .views import UserRegistration, UserEditView, PasswordsChangeView, ShowProfilePage, EditProfilePage, CreateProfilePage,  activate_account, check_email
 from django.contrib.auth import views as auth_views
-from . import views 
+from . import views
 
 
 urlpatterns = [
@@ -12,6 +12,8 @@ urlpatterns = [
     path('<int:pk>/profile/', ShowProfilePage.as_view(), name='show_profile_page'),
     path('<int:pk>/edit_profile_page/', EditProfilePage.as_view(), name='edit_profile_page'),
     path('Create_profile_page/', CreateProfilePage.as_view(), name='create_profile_page'),
+    path('activate/<uuid:activation_code>/', activate_account, name='activate'),
+    path('check_email/', check_email, name='check_email'),
 
 
 ]

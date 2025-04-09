@@ -9,36 +9,36 @@
     <div class="row justify-content-center">
         <!-- Adjust the column size to make the post wider but centered -->
         <div class="col-12 col-md-10 col-lg-8">
-            <h1>{{ post.title }}</h1>
-            <small>by: {{ post.author }} | {{ post.post_date }} </small>
+            <h1 class="text-center" style="color: #5D3F6B;">{{ post.title }}</h1>
+            <small class="text-muted">by: {{ post.author }} | {{ post.post_date }} </small>
             <br>
             {% if user.is_authenticated %}
                 {% if user.id == post.author.id %}
-                    - <a href="{% url 'update_post' post.pk %}">Edit</a> 
-                    | <a href="{% url 'delete_post' post.pk %}">Delete</a>
+                    - <a href="{% url 'update_post' post.pk %}" style="color: #5D3F6B;">Edit</a> 
+                    | <a href="{% url 'delete_post' post.pk %}" style="color: #5D3F6B;">Delete</a>
                 {% endif %}
             {% endif %}
             <br><br>
             <hr>
-            
+
             <!-- Post image -->
             <img src="{{ post.images.url }}" alt="card image cap" class="img-fluid mb-3" width="1000" height="1000">
-            
+
             <!-- Post body -->
             <p>{{ post.body }}</p>
             
             <hr>
             
             <!-- Comments Section -->
-            <h3>Comments</h3>
+            <h3 style="color: #5D3F6B;">Comments</h3>
             {% if not post.comments.all %}
-                <p>No Comments Yet... <a href="{% url 'add_comment' post.pk %}">Add One</a></p>
+                <p>No Comments Yet... <a href="{% url 'add_comment' post.pk %}" style="color: #5D3F6B;">Add One</a></p>
             {% else %}
-                <a href="{% url 'add_comment' post.pk %}">Add Comment</a>
+                <a href="{% url 'add_comment' post.pk %}" style="color: #5D3F6B;">Add Comment</a>
                 <br><br>
 
                 <!-- Link to toggle visibility of comments -->
-                <a href="#commentsSection" data-toggle="collapse" aria-expanded="false" aria-controls="commentsSection">
+                <a href="#commentsSection" data-toggle="collapse" aria-expanded="false" aria-controls="commentsSection" style="color: #5D3F6B;">
                     View Comments ({{ post.comments.count }})
                 </a>
 
@@ -46,31 +46,32 @@
                 <div class="collapse" id="commentsSection">
                     {% for comment in post.comments.all %}
                         <div class="comment mb-3">
-                            <strong>{{ comment.name }} - {{ comment.date_created }}</strong>
+                            <strong style="color: #5D3F6B;">{{ comment.name }} - {{ comment.date_created }}</strong>
                             <p>{{ comment.body }}</p>
                         </div>
                     {% endfor %}
                 </div>
-                <br><br>
+                <br>
             {% endif %}
             <br>
-
-            <!-- Back Button -->
-            <a href="{% url 'home' %}" class="btn btn-warning">Back</a>
-            
-            <br><br>
-            
-            <!-- Like/Unlike Button -->
-            <p>Likes: {{ post.like_count }}</p>
-            {% if user.is_authenticated %}
-                {% if user_likes %}
-                    <a href="{% url 'toggle_like' post.id %}" class="btn btn-warning">Unlike</a>
-                {% elif user_unlikes %}
-                    <a href="{% url 'toggle_like' post.id %}" class="btn btn-warning">Like</a>
+            <!-- Like Button -->
+            <button class="like-btn border-0 bg-transparent" data-post-id="{{ post.pk }}">
+                {% if user in post.likes.all %}
+                    <span class="like-icon" style="font-size: 24px;">❤️</span>
                 {% else %}
-                    <a href="{% url 'toggle_like' post.id %}" class="btn btn-warning">Like</a>
+                    <span class="like-icon" style="font-size: 24px;">🤍</span>
                 {% endif %}
-            {% endif %}
+            </button>
+
+            <!-- Like Count -->
+            <span class="like-count">{{ post.likes.count }}</span>
+                        
+            
+
+            <br><br>
+
+             <!-- Back Button -->           
+            <a href="{% url 'home' %}" class="btn text-white" style="background-color: #5D3F6B; border-color: #5D3F6B;">Back</a>
             
             <br><br>
             
@@ -86,32 +87,32 @@
                     </div>
                     <div class="col-md-10">
                         <div class="card-body">
-                            <h5 class="card-title">{{ post.author }}</h5>
+                            <h5 class="card-title" style="color: #5D3F6B;">{{ post.author }}</h5>
                             <p class="small text-muted">
                                 {% if post.author.profile %}
-                                    <a href="{% url 'show_profile_page' post.author.profile.id %}">Profile Page</a>
+                                    <a href="{% url 'show_profile_page' post.author.profile.id %}" style="color: #5D3F6B;">Profile Page</a>
                                 {% else %}
                                     <p>No author assigned</p>
                                 {% endif %}
                                 
                                 {% if post.author.profile.website_url %}
-                                    <a href="{{ post.author.profile.website_url }}">Website</a> |
+                                    <a href="{{ post.author.profile.website_url }}" style="color: #5D3F6B;">Website</a> |
                                 {% endif %}
                                 
                                 {% if post.author.profile.facebook_url %}
-                                    <a href="{{ post.author.profile.facebook_url }}">Facebook</a> |
+                                    <a href="{{ post.author.profile.facebook_url }}" style="color: #5D3F6B;">Facebook</a> |
                                 {% endif %}
                                 
                                 {% if post.author.profile.twitter_url %}
-                                    <a href="{{ post.author.profile.twitter_url }}">Twitter</a> |
+                                    <a href="{{ post.author.profile.twitter_url }}" style="color: #5D3F6B;">Twitter</a> |
                                 {% endif %}
                                 
                                 {% if post.author.profile.instagram_url %}
-                                    <a href="{{ post.author.profile.instagram_url }}">Instagram</a> |
+                                    <a href="{{ post.author.profile.instagram_url }}" style="color: #5D3F6B;">Instagram</a> |
                                 {% endif %}
                                 
                                 {% if post.author.profile.snap_url %}
-                                    <a href="{{ post.author.profile.snap_url }}">Snapchat</a>
+                                    <a href="{{ post.author.profile.snap_url }}" style="color: #5D3F6B;">Snapchat</a>
                                 {% endif %}
                             </p>
                             <p class="card-text">{{ post.author.profile.bio }}</p>

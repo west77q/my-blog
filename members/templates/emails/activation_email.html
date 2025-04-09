@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #333;
+        }
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hello {{ username }},</h2>
+        <p>Thank you for registering! Click the button below to activate your account:</p>
+        <a class="button" href="{{ activation_link }}">Activate Your Account</a>
+        <p>If you cannot click the button, use this link: <br> <a href="{{ activation_link }}">{{ activation_link }}</a></p>
+        <p>Best regards,<br> The Info Mall Core Team</p>
+    </div>
+</body>
+</html>

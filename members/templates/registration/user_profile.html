@@ -11,9 +11,9 @@
       <div class="col-md-4 text-center">
         <!-- Profile Picture -->
         {% if page_user.profile_pic %}
-          <img src="{{ page_user.profile_pic.url }}" alt="Author Profile Pic" class="rounded-circle img-fluid" style="width: 150px; height: 150px;" data-bs-toggle="modal" data-bs-target="#profilePicModal">
+          <img src="{{ page_user.profile_pic.url }}" alt="Author Profile Pic" class="rounded-circle img-fluid profile-pic" style="width: 150px; height: 150px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#profilePicModal">
         {% else %}
-          <img src="{% static 'myblog/images/default.jpg' %}" alt="default pic" class="rounded-circle img-fluid" style="width: 150px; height: 150px;" data-bs-toggle="modal" data-bs-target="#profilePicModal">
+          <img src="{% static 'myblog/images/default.jpg' %}" alt="default pic" class="rounded-circle img-fluid profile-pic" style="width: 150px; height: 150px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#profilePicModal">
         {% endif %}
       </div>
     </div>
@@ -26,7 +26,7 @@
     <div class="col-md-8 offset-md-2">
       <div class="card">
         <div class="card-body">
-          <h2 class="card-title text-center">{{ page_user.user.username }}'s Profile</h2>
+          <h2 class="text-center mb-4" style="color:  #5D3F6B;">{{ page_user.user.username }}'s Profile</h2>
           <p class="text-center text-muted">Joined on: {{ page_user.user.date_joined|date:"F j, Y" }}</p>
 
           <!-- Social Media Links -->
@@ -64,13 +64,13 @@
 
           <!-- Bio Section -->
           <div class="mb-4">
-            <h4 class="text-center">Bio</h4>
+            <h2 class="text-center mb-4" style="color:  #5D3F6B;">Bio</h4>
             <p class="card-text">{{ page_user.bio }}</p>
           </div>
 
           <!-- Back Button -->
           <div class="text-center">
-            <a href="{% url 'home' %}" class="btn btn-warning">Back to Home</a>
+            <a href="{% url 'home' %}" class="btn btn-lg text-white" style="background-color: #5D3F6B; border-color: #5D3F6B;">Back to Home</a>
           </div>
         </div>
       </div>

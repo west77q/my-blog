@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+kenny/
+
+# Django stuff
+*.sqlite3
+db.sqlite3
+*.log
+local_settings.py
+.env
+
+# Static & Media
+/staticfiles/
+/media/
+
+# VS Code / PyCharm / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Migrations (optional – if you want clean git history)
+*/migrations/*.py
+!*/migrations/__init__.py

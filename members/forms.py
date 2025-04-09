@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
 from django.contrib.auth.models import User
 from django import forms
 from Blog.models import Profile
@@ -50,3 +50,20 @@ class PasswordChangingForm(PasswordChangeForm):
     class meta:
         model = User
         field = ('old_password','new_password1', ' new_password2 ')
+
+
+
+class UserChangeForm(UserChangeForm):
+    password = forms.CharField(widget=forms.PasswordInput, required=False)
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'password']
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data['password']:
+            user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user

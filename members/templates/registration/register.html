@@ -1,27 +1,160 @@
-{% extends 'base.html' %}
-{% block title %}Register{% endblock %}
-
 {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        /* Styling for the body and register container */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Ensures full height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #2b5876, #4e4376); /* Dark gradient */
+            font-family: 'Arial', sans-serif;
+        }
 
-    
+        .register-container {
+            background: rgba(255, 255, 255, 0.85); /* Semi-transparent */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 380px; /* Reduced width */
+            text-align: center;
+            max-height: 90vh; /* Prevents the form from becoming too tall */
+            overflow-y: auto; /* Enables scrolling if content is too large */
+        }
 
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
 
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
+        button {
+            background-color: #2b5876; /* Deep blue */
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            padding: 12px;
+        }
 
-<h1>Register</h1>
-<br/><br/>
-<div class="form-group">
-     <form method="POST">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button class="btn btn-warning">Register</button>
-</div>
+        button:hover {
+            background-color: #4e4376;
+        }
 
+        /* Styling for messages (success/error) */
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
 
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
 
+        /* Footer styling */
+        .footer p {
+            margin-top: 10px;
+            font-size: 14px;
+        }
 
+        .footer a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Register</h1>
 
+        <!-- Display Django messages -->
+        {% if messages %}
+            <div>
+                {% for message in messages %}
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
+        <!-- Registration form -->
+        <form method="POST">
+            {% csrf_token %}
 
+            <div class="form-group">
+                {{ form.username.errors }}
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="form-group">
+                {{ form.first_name.errors }}
+                <input type="text" name="first_name" placeholder="First Name" required>
+            </div>
+
+            <div class="form-group">
+                {{ form.last_name.errors }}
+                <input type="text" name="last_name" placeholder="Last Name" required>
+            </div>
+
+            <div class="form-group">
+                {{ form.email.errors }}
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="form-group">
+                {{ form.password1.errors }}
+                <input type="password" name="password1" placeholder="Password" required>
+            </div>
+
+            <div class="form-group">
+                {{ form.password2.errors }}
+                <input type="password" name="password2" placeholder="Confirm Password" required>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="footer">
+            <p>Already have an account? <a href="{% url 'login' %}" style="color: #4e4376;">Login</a></p>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", function() {
+                document.querySelector("button[type=submit]").disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>
 {% endblock %}

@@ -1,33 +1,37 @@
 
 {% extends 'base.html' %}
-{% block title %}Creat A New Blog Post{% endblock %}
+{% block title %}Create A New Blog Post{% endblock %}
 
 {% block content %}
-
-    
-
-
-
-
-{% if user.is_authenticated %}
-     <h1>Add Post</h1>
-     <br/><br/>
-     <div class="form-group">
-          <form method="POST" enctype="multipart/form-data">
-               {% csrf_token %}
-               {{ form.as_p }}
-               <button class="btn btn-warning">Post</button>
-     </div>
-     
-
-{% else %}
-You Need To Be A Registered Member Before You Can Use This Space!
-
-{% endif %}
-
-
-
-
-
-
+<div class="container mt-5">
+    {% if user.is_authenticated %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-header text-white text-center" style="background-color: #5D3F6B;">
+                        <h2>Add a New Blog Post</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ form.as_p }}
+                            </div>
+                            <div class="d-grid gap-2">
+                              <button class="btn btn-lg text-white" style="background-color: #5D3F6B; border-color: #5D3F6B;">
+                                   Publish Post
+                               </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-danger text-center" role="alert">
+            <h4>You Need To Be a Registered Member Before You Can Post!</h4>
+            <a href="{% url 'register' %}" class="btn btn-primary mt-3">Register Here</a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
